@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const width = 4;
   let squares = [];
   let square;
+  let score = 0;
 
   function createBoard() {
     for (let i = 0; i < width * width; i++) {
@@ -16,16 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
     generateRandomNumber();
     generateRandomNumber();
   }
-
   createBoard();
 
   function generateRandomNumber() {
     let randomNumberOnGrid = Math.floor(Math.random() * squares.length);
     if (squares[randomNumberOnGrid].innerHTML == 0) {
       squares[randomNumberOnGrid].innerHTML = 2;
+      checkForGameOver();
     } else {
       generateRandomNumber();
     }
+    colorSquares();
   }
 
   function moveRight() {
@@ -149,9 +151,35 @@ document.addEventListener('DOMContentLoaded', () => {
           parseInt(squares[i].innerHTML) + parseInt(squares[i + 1].innerHTML);
         squares[i].innerHTML = combinedTotal;
         squares[i + 1].innerHTML = 0;
+        score += combinedTotal;
+        scoreDisplay.innerHTML = score;
       }
     }
+    checkForWin();
   }
+
+  function colorSquares() {
+    let colors = {
+      0: ['#CDC1B5', '#776E66'],
+      2: ['#EEE4DB', '#776E66'],
+      4: ['#EEE1CA', '#776E66'],
+      8: ['#F2B27E', '#F9F6F2'],
+      16: ['purple', '#776E66'],
+      32: ['blue', '#776E66'],
+      64: ['violet', '#776E66'],
+      128: ['violet', '#776E66'],
+      256: ['violet', '#776E66'],
+      512: ['violet', '#776E66'],
+      1024: ['violet', '#776E66'],
+      2048: ['violet', '#776E66'],
+    };
+    for (let i = 0; i < width * width; i++) {
+      squares[i].style = `background-color: ${
+        colors[parseInt(squares[i].innerHTML)][0]
+      }; color: ${colors[parseInt(squares[i].innerHTML)][1]}`;
+    }
+  }
+
   function combineColumn() {
     for (let i = 0; i < 12; i++) {
       if (squares[i].innerHTML === squares[i + width].innerHTML) {
@@ -160,8 +188,11 @@ document.addEventListener('DOMContentLoaded', () => {
           parseInt(squares[i + width].innerHTML);
         squares[i].innerHTML = combinedTotal;
         squares[i + width].innerHTML = 0;
+        score += combinedTotal;
+        scoreDisplay.innerHTML = score;
       }
     }
+    checkForWin();
   }
 
   //Keycodes
@@ -175,7 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (e.keyCode === 38) {
       keyUp();
     }
-    console.log(e.keyCode);
   }
 
   document.addEventListener('keyup', control);
@@ -204,5 +234,28 @@ document.addEventListener('DOMContentLoaded', () => {
     combineColumn();
     moveUp();
     generateRandomNumber();
+  }
+
+  function checkForWin() {
+    for (let i = 0; i < squares.length; i++) {
+      if (squares[i].innerHTML == 2048) {
+        resultDisplay.innerHTML = 'You Win!';
+        document.removeEventListener('keyup', control);
+      }
+    }
+  }
+
+  function checkForGameOver() {
+    let zeros = 0;
+    for (let i = 0; i < squares.length; i++) {
+      if (squares[i].innerHTML == 0) {
+        zeros++;
+      }
+    }
+
+    if (zeros === 0) {
+      resultDisplay.innerHTML = 'You Lose';
+      document.removeEventListener('keyup', control);
+    }
   }
 });
