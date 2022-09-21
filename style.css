@@ -10,4 +10,9 @@
   width: 100px;
   height: 100px;
   background-color: cadetblue;
+  font-size: 60px;
+  font-weight: bold;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
 }
